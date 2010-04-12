@@ -60,7 +60,7 @@ Goya.Layer = function(config) {
     this._centerY = 0;
     this._mouseWithin = false;
 
-    var _methods = this._methods = [
+    this._methods = [
       "beginPath",
       "closePath",
       "moveTo",
@@ -78,7 +78,8 @@ Goya.Layer = function(config) {
       "save",
       "restore"
     ];
-    var _setters = this._setters = [
+
+    this._setters = [
         "fillStyle",
         "strokeStyle",
         "textAlign",
@@ -90,14 +91,17 @@ Goya.Layer = function(config) {
         "drawImage"
     ];
 
+    var _methods = this._methods;
+    var _setters = this._setters;
     var self = this;
     for (var m=0, ml=_methods.length; m < ml; m++) {
         (function (a) {
             if (!self[a]) {
                 self[a] = function() {
                     var params = [a];
-                    if (arguments.length)
+                    if (arguments.length) {
                         params.push.apply(params, Array.prototype.slice.call(arguments));
+                    }
                     self.calls.push(params);
                 };
             }
@@ -106,7 +110,7 @@ Goya.Layer = function(config) {
     for (var s=0, sl=_setters.length; s < sl; s++) {
         (function (a) {
             self.__defineSetter__(a, function(p) {
-                self.calls.push([a, p])
+                self.calls.push([a, p]);
             });
         })(_setters[s]);
     }
@@ -122,15 +126,16 @@ Goya.Layer.ATTRS = {
     },
     context: {
         getter: function() {
-            if (this.goya)
+            if (this.goya) {
                 return this.goya.context;
+            }
         }
     },
     angle: {
         value: 0,
         setter: function(val) {
             val = val % 360;
-            if (this._rotation == val) return val;
+            if (this._rotation == val) { return val; }
             this._nextRotation = (val - this._rotation) * Math.PI/180;
             return val;
         }
@@ -139,7 +144,7 @@ Goya.Layer.ATTRS = {
         readOnly: true,
         getter: function() {
             return this._x + this.parent.globalX;
-        },
+        }
     },
     globalY: {
         readOnly: true,
@@ -151,14 +156,15 @@ Goya.Layer.ATTRS = {
     y: { value: 0 },
     _mouseWithin: { value: false },
     visible: { value: true }
-}
+};
 
 Y.extend(Goya.Layer, Y.Base, {
     initializer: function(config) {
         this.on("angleChange", this._redraw);
         this.on("_mouseWithinChange", function(e) {
-            if (e.prevVal !== e.newVal)
+            if (e.prevVal !== e.newVal) {
                 this.fire(e.newVal === true ? "mouseover" : "mouseout");
+            }
         }, this);
 
         this.after("xChange", this._redraw);
@@ -168,12 +174,13 @@ Y.extend(Goya.Layer, Y.Base, {
     appendChild: function(child) {
         child.set("parent", this);
         this.children.push(child);
-        if (this.goya) this.goya.draw();
+        if (this.goya) { this.goya.draw(); }
     },
     removeChild: function(child) {
         var index = this.children.indexOf(child);
-        if (index != -1)
+        if (index != -1) {
             delete this.children[index];
+        }
     },
     moveCenterTo: function(x, y) {
         this._centerX = x;
@@ -249,16 +256,16 @@ Y.extend(Goya.Layer, Y.Base, {
                 e.localY -= this.get("y");
             }
             child.draw(e || null);
-        }, this)
+        }, this);
     },
 
     _redraw: function(e) {
-        if (this.goya) this.goya.draw();
+        if (this.goya) { this.goya.draw(); }
         e.stopImmediatePropagation();
     },
 
     draw: function(e) {
-        if (!this.get("visible")) return;
+        if (!this.get("visible")) { return; }
 
         var ctx = this.get("context");
         var calls = this.calls;
@@ -267,8 +274,9 @@ Y.extend(Goya.Layer, Y.Base, {
 
         ctx.save();
         ctx.translate(this.get("x"), this.get("y"));
-        if (this._nextRotation)
+        if (this._nextRotation) {
             ctx.rotate(this._nextRotation);
+        }
 
         // Execute methods or setters in the |calls| queue
         for (var i=0, l=calls.length; i<l; i++) {
@@ -277,8 +285,9 @@ Y.extend(Goya.Layer, Y.Base, {
 
             if (methods.indexOf(action) != -1) {
                 ctx[action].apply(ctx, call.slice(1, call.length));
-                if (e && this.ghostables.indexOf(action) != -1)
+                if (e && this.ghostables.indexOf(action) != -1) {
                     this._detectMouse(e);
+                }
             } else if (setters.indexOf(action) != -1) { // it must be a setter
                 ctx[action] = call[1];
             }
@@ -286,30 +295,32 @@ Y.extend(Goya.Layer, Y.Base, {
         }
         this._drawChildren(e || null);
         ctx.restore();
-    },
+    }
 });
 
 Y.Goya = Goya;
 
 Y.Anim.ATTRS.node = {
     setter: function(node) {
-        if (!(node instanceof Goya.Layer))
+        if (!(node instanceof Goya.Layer)) {
             node = Y.one(node);
+        }
         this._node = node;
         if (!node) {
             Y.log(node + ' is not a valid node', 'warn', 'Anim');
         }
         return node;
     }
-}
+};
 
 Y.Anim.DEFAULT_SETTER = function(anim, att, from, to, elapsed, duration, fn, unit) {
     unit = unit || '';
     var NUM = Number;
-    if (anim._node instanceof Goya.Layer)
+    if (anim._node instanceof Goya.Layer) {
         anim._node.set(att, fn(elapsed, NUM(from), NUM(to) - NUM(from), duration));
-    else
+    } else {
         anim._node.setStyle(att, fn(elapsed, NUM(from), NUM(to) - NUM(from), duration) + unit);
+    }
 };
 
 Y.Anim.DEFAULT_GETTER = function(anim, prop) {

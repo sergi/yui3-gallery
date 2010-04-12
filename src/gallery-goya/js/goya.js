@@ -290,4 +290,30 @@ Y.extend(Goya.Layer, Y.Base, {
 });
 
 Y.Goya = Goya;
-}, '1.0', { requires:['base', 'node', 'dom'] });
+
+Y.Anim.ATTRS.node = {
+    setter: function(node) {
+        if (!(node instanceof Goya.Layer))
+            node = Y.one(node);
+        this._node = node;
+        if (!node) {
+            Y.log(node + ' is not a valid node', 'warn', 'Anim');
+        }
+        return node;
+    }
+}
+
+Y.Anim.DEFAULT_SETTER = function(anim, att, from, to, elapsed, duration, fn, unit) {
+    unit = unit || '';
+    var NUM = Number;
+    if (anim._node instanceof Goya.Layer)
+        anim._node.set(att, fn(elapsed, NUM(from), NUM(to) - NUM(from), duration));
+    else
+        anim._node.setStyle(att, fn(elapsed, NUM(from), NUM(to) - NUM(from), duration) + unit);
+};
+
+Y.Anim.DEFAULT_GETTER = function(anim, prop) {
+    return anim._node instanceof Goya.Layer ? anim._node.get(prop) : anim._node.getComputedStyle(prop);
+};
+
+}, '1.0', { requires:['base', 'node', 'dom', 'anim'] });

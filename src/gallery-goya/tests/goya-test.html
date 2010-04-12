@@ -40,9 +40,19 @@
             function go() {
                 square2.setX(square2.getX() +2);
                 square2.setY(square2.getY() +1);
-                square3.set("angle", square3.get("angle")+10);
+                //square3.set("angle", square3.get("angle")+10);
                 text.setX(text.getX() +1);
             }
+
+            var myAnim = new Y.Anim({
+                    node: square3,
+                    to: {
+                        x:200,
+                        angle:30
+                    }
+            });
+
+            myAnim.run()
 
             setInterval(go, 50)
         })

@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <title>test</title>
+        <script type="text/javascript" src="../../../../yui3/build/yui/yui-debug.js"></script>
+        <script type="text/javascript" src="../js/goya.js"></script>
+        <script type="text/javascript">
+        YUI().use('goya', function(Y) {
+            var goya = new Y.Goya("#dtest", 900, 135);
+
+            var square2 = new Y.Goya.Layer()
+            square2.fillStyle = "#ff0000"
+            square2.fillRect(13, 13, 17, 17)
+            goya.appendChild(square2)
+            square2.on("mouseover", function() {
+                    square2.fillStyle = "#00ff00";
+                    square2.fillRect(13, 13, 17, 17);
+            }, this)
+            square2.on("mouseout", function() {
+                    square2.fillStyle = "#ff00ff"
+                    square2.fillRect(13, 13, 17, 17)
+            })
+
+            var square3 = new Y.Goya.Layer()
+            square3.fillStyle = "#0000ff"
+            square3.set("x", 100);
+            square3.set("y", 100);
+            square3.moveCenterTo(10, 10);
+            square3.fillRect(0, 0, 20, 20);
+            goya.appendChild(square3)
+
+
+            var text = new Y.Goya.Layer()
+            text.font = "25px Monaco"
+            text.fillStyle = "#FF0000"
+            text.fillText("Hello, World!", 0, 20)
+            goya.appendChild(text);
+
+            function go() {
+                square2.setX(square2.getX() +2);
+                square2.setY(square2.getY() +1);
+                square3.set("angle", square3.get("angle")+10);
+                text.setX(text.getX() +1);
+            }
+
+            setInterval(go, 50)
+        })
+        </script>
+    </head>
+    <body>
+    <div id="dtest"></div>
+    </body>
+</html>

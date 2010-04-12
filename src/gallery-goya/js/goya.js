@@ -188,6 +188,9 @@ Y.extend(Goya.Layer, Y.Base, {
     },
     getX: function(x) { return this.get("x"); },
     getY: function(y) { return this.get("y"); },
+    getXY: function(xy) {
+        return [this.get("x"), this.get("y")];
+    },
     setX: function(x) { this.set("x", x); },
     setY: function(y) { this.set("y", y); },
     setXY: function(xy) {

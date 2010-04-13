@@ -11,7 +11,11 @@ Goya.prototype = {
         var canvas = Y.Node.create('<canvas/>').setAttrs({
             "width":  this.width,
             "height": this.height
-        }).setStyle("z-index", 1);
+        }).setStyles({
+            "z-index": 1,
+            "padding": 0,
+            "margin": 0
+        });
 
         this.context = canvas._node.getContext('2d');
         this.root = new Goya.Layer();

@@ -33,6 +33,13 @@ Goya.prototype = {
             e.localY = e.clientY - bounds.top;
             this.root.draw(e);
         }, this);
+        canvas.on('click', function(e) {
+            var bounds = e.currentTarget._node.getBoundingClientRect();
+            e.localX = e.clientX - bounds.left;
+            e.localY = e.clientY - bounds.top;
+            e._mouseClick = true;
+            this.root.draw(e);
+        }, this);
 
         Y.one(this.container).append(canvas);
     },
@@ -159,6 +166,7 @@ Goya.Layer.ATTRS = {
     x: { value: 0 },
     y: { value: 0 },
     _mouseWithin: { value: false },
+    _mouseClick: { value: false },
     visible: { value: true }
 };
 
@@ -169,6 +177,9 @@ Y.extend(Goya.Layer, Y.Base, {
             if (e.prevVal !== e.newVal) {
                 this.fire(e.newVal === true ? "mouseover" : "mouseout");
             }
+        }, this);
+        this.on("_mouseClickChange", function(e) {
+            if (e.newVal) { this.fire("click"); }
         }, this);
 
         this.after("xChange", this._redraw);
@@ -253,7 +264,9 @@ Y.extend(Goya.Layer, Y.Base, {
             testX -= this.get("x");
             testY -= this.get("y");
         }
-        this.set("_mouseWithin", this.get("context").isPointInPath(testX, testY));
+        var mouseWithin = this.get("context").isPointInPath(testX, testY);
+        this.set("_mouseWithin", mouseWithin);
+        this.set("_mouseClick", mouseWithin && e._mouseClick);
     },
 
     _drawChildren: function(e) {

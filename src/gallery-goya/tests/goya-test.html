@@ -3,62 +3,115 @@
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <title>test</title>
-        <script type="text/javascript" src="../../../../yui3/build/yui/yui-debug.js"></script>
+        <script type="text/javascript" src="../../../../yui31/build/yui/yui-debug.js"></script>
         <script type="text/javascript" src="../js/goya.js"></script>
         <script type="text/javascript">
         YUI().use('goya', function(Y) {
-            var goya = new Y.Goya("#dtest", 900, 135);
+            // Create Goya parent object and pass a node to hook it on
+            // along with the desired canvas size
+            var G = new Y.Goya("#container", 700, 700);
 
-            var square2 = new Y.Goya.Layer()
-            square2.fillStyle = "#ff0000"
-            square2.fillRect(13, 13, 17, 17)
-            goya.appendChild(square2)
-            square2.on("mouseover", function() {
-                    square2.fillStyle = "#00ff00";
-                    square2.fillRect(13, 13, 17, 17);
-            }, this)
-            square2.on("mouseout", function() {
-                    square2.fillStyle = "#ff00ff"
-                    square2.fillRect(13, 13, 17, 17)
+            // Create the first layer inside the canvas
+            var square = new Y.Goya.Layer();
+            square.fillStyle = "#ff0000";
+            square.fillRect(13, 13, 25, 25);
+            G.appendChild(square);
+
+            // Add events
+            square.on("mouseover", function() {
+                square.fillStyle = "#00ff00";
+                square.fillRect(13, 13, 25, 25);
+            })
+            square.on("mouseout", function() {
+                square.fillStyle = "#ff0000";
+                square.fillRect(13, 13, 25, 25);
             })
 
-            var square3 = new Y.Goya.Layer()
-            square3.fillStyle = "#0000ff"
-            square3.set("x", 100);
-            square3.set("y", 100);
-            square3.moveCenterTo(10, 10);
-            square3.fillRect(0, 0, 20, 20);
-            goya.appendChild(square3)
 
+            // Create a second layer
+            var roundedRect = new Y.Goya.Layer();
+            roundedRect.fillStyle = "#0000ff";
+            roundedRect.setXY([200, 200]);
+            roundedRect.moveCenterTo(10, 10); // Set rotation center
+            roundedRect.fillRoundedRect(0, 0, 90, 20, 10);
+            G.appendChild(roundedRect);
 
-            var text = new Y.Goya.Layer()
-            text.font = "25px Monaco"
-            text.fillStyle = "#FF0000"
-            text.fillText("Hello, World!", 0, 20)
-            goya.appendChild(text);
+            var text1 = new Y.Goya.Layer();
+            text1.setXY([5, 5]);
+            text1.font = "14px Monaco";
+            text1.fillStyle = "#FFFFFF";
+            text1.fillText("Click me!!", 0, 10);
+            roundedRect.appendChild(text1);
 
-            function go() {
-                square2.setX(square2.getX() +2);
-                square2.setY(square2.getY() +1);
-                //square3.set("angle", square3.get("angle")+10);
-                text.setX(text.getX() +1);
-            }
+            // Create a text layer
+            var text = new Y.Goya.Layer();
+            text.setXY([50, 100]);
+            text.font = "14px Arial";
+            text.fillStyle = "#00AA00";
+            text.fillText("Hello, World!", 0, 20);
+            G.appendChild(text);
 
-            var myAnim = new Y.Anim({
-                    node: square3,
-                    to: {
-                        x:200,
-                        angle:30
-                    }
+            // Create an infinite animation that moves the first square back and forth 100 px
+            var squareAnim = new Y.Anim({
+                node: square,
+                to: {
+                    x: 100,
+                    y: 50
+                },
+                duration: 2,
+                iterations: 'infinite',
+                direction: 'alternate'
+            });
+            squareAnim.run();
+
+            // Create an eased animation when the second square is clicked
+            var roundedRectAnim = new Y.Anim({
+                    node: roundedRect,
+                    duration: 3,
+                    easing: Y.Easing.elasticOut
             });
 
-            myAnim.run()
+            roundedRect.on("click", function(e) {
+                roundedRectAnim.set('to', {
+                    curve: randomCurve([230, 150]), // Make it follow a random path
+                    angle: parseInt(Math.random()*360) // We want to end up with the layer rotated to a random angle
+                });
+                roundedRectAnim.run();
+            });
 
-            setInterval(go, 50)
+            var randomCurve = function(end) {
+                var points = [],
+                    n = 3,
+                    winWidth = 100,
+                    winHeight = 100;
+
+                for (var i = 0; i < n; ++i) {
+                    points.push([
+                        Math.floor(Math.random() * winWidth),
+                        Math.floor(Math.random() * winHeight)
+                    ]);
+                }
+
+                if (end) { points.push(end); }
+                return points;
+            };
+
+
+
+            var textAnim = new Y.Anim({
+                node: text,
+                from: { angle: -30 },
+                to: { angle: 30 },
+                duration: 1,
+                easing: Y.Easing.easeOut,
+                iterations: 'infinite',
+                direction: 'alternate'
+            });
+            textAnim.run();
         })
         </script>
     </head>
     <body>
-    <div id="dtest"></div>
+    <div id="container"></div>
     </body>
 </html>

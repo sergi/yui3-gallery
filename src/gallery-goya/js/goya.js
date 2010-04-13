@@ -242,6 +242,8 @@ Y.extend(Goya.Layer, Y.Base, {
         this.roundedRect(x, y, w, h, rad);
         this.fill();
     },
+    // Ellipse algorithm by Andrea Giammarchi
+    // http://webreflection.blogspot.com/2009/01/ellipse-and-circle-for-canvas-2d.html
     ellipse:function(aX, aY, aWidth, aHeight){
         var hB = (aWidth / 2) * 0.5522848,
         vB = (aHeight / 2) * 0.5522848,

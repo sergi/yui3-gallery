@@ -8,12 +8,11 @@ Every layer preserves most of canvas methods and behavior, and acts completely
 independent of the other layers. A layer can have as many children as necessary,
 that will be drawn and animated in the context of the parent.
 
-Goya was heavily inspired and contains parts of [mojombo's primer](http://github.com/mojombo/primer) project:
+Goya was heavily inspired and contains parts of [mojombo's primer](http://github.com/mojombo/primer) project.
 
 
-Goya basics
+Basics
 ==============
-
 Include Goya script
 -------------------
 
@@ -147,5 +146,4 @@ Create an eased animation along a curved path when the rectagle is clicked.
         });
         roundedRectAnim.run();
     });
-
 
